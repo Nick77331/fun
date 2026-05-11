@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cool Boy Games</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin: 0;
+    }
+
+    .game-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #ffcc00;
+      color: #000;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #ffb700;
+    }
+
+    #game-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      min-height: 400px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🕶️ Cool Boy Games 🕶️</h1>
+    <p>Select a game to play!</p>
+  </header>
+  <div class="game-buttons">
+    <button onclick="loadGame('shooter1')">Tine Shooter 1</button>
+    <button onclick="loadGame('shooter2')">Tine Shooter 2</button>
+    <button onclick="loadGame('shooter3')">Tine Shooter 3</button>
+    <button onclick="loadGame('racing')">Racing Game</button>
+  </div>
+  <div id="game-container">
+    <!-- Games will load here -->
+  </div>
+
+  <!-- Include Three.js for 3D racing scene -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script>
+    let currentAnimationId = null;
+
+    function loadGame(game) {
+      // Cancel previous animation if any
+      if (currentAnimationId) {
+        cancelAnimationFrame(currentAnimationId);
+        currentAnimationId = null;
+      }
+      const container = document.getElementById('game-container');
+      container.innerHTML = '';
+
+      if (game === 'shooter1' || game === 'shooter2' || game === 'shooter3') {
+        // Placeholder for shooter, now specifically Tine Shooter 3
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 400;
+        canvas.style.border = '2px solid #fff';
+        container.appendChild(canvas);
+        startShooterGame(canvas, 'Tine Shooter 3');
+      } else if (game === 'racing') {
+        startRacingScene(container);
+      }
+    }
+
+    // Placeholder for shooter game
+    function startShooterGame(canvas, gameName) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.font = '24px Arial';
+      ctx.fillText(`Playing ${gameName}!`, 50, 50);
+
+      let x = 100;
+      setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText(`Playing ${gameName}!`, 50, 50);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(x, 100, 50, 50);
+        x += 5;
+        if (x > canvas.width) x = 0;
+      }, 100);
+    }
+
+    // 3D Racing scene with Three.js
+    function startRacingScene(container) {
+      // Cleanup previous scene if exists
+      if (window.renderer) {
+        window.renderer.dispose();
+        window.scene = null;
+        window.camera = null;
+        window.renderer = null;
+        cancelAnimationFrame(currentAnimationId);
+        currentAnimationId = null;
+      }
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      container.innerHTML = '';
+      container.appendChild(renderer.domElement);
+
+      window.scene = scene;
+      window.camera = camera;
+      window.renderer = renderer;
+
+      // Road plane
+      const roadGeometry = new THREE.PlaneGeometry(10, 200);
+      const roadMaterial = new THREE.MeshBasicMaterial({ color: 0x555555, side: THREE.DoubleSide });
+      const road = new THREE.Mesh(roadGeometry, roadMaterial);
+      road.rotation.x = Math.PI / 2;
+      scene.add(road);
+
+      // Lane lines
+      const lineGeometry = new THREE.BoxGeometry(0.2, 0.01, 5);
+      const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      for (let i = -100; i < 100; i += 10) {
+        const line = new THREE.Mesh(lineGeometry, lineMaterial);
+        line.position.z = i;
+        scene.add(line);
+      }
+
+      // Car placeholder
+      const carGeometry = new THREE.BoxGeometry(1, 0.5, 2);
+      const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const car = new THREE.Mesh(carGeometry, carMaterial);
+      car.position.y = 0.25;
+      car.position.x = 0;
+      scene.add(car);
+
+      camera.position.y = 2;
+      camera.position.z = 10;
+      camera.lookAt(0, 0, 0);
+
+      let speed = 0.2;
+
+      function animate() {
+        window.camera.position.z -= speed;
+        if (window.camera.position.z < -100) {
+          window.camera.position.z = 10; // Loop to simulate endless road
+        }
+        renderer.render(scene, camera);
+        currentAnimationId = requestAnimationFrame(animate);
+      }
+
+      animate();
+    }
+  </script>
+</body>
+</html>
