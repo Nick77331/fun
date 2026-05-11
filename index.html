@@ -9,28 +9,24 @@
       font-family: 'Arial', sans-serif;
       background: linear-gradient(to right, #1e3c72, #2a5298);
       color: #fff;
-      text-align: center;
       margin: 0;
       padding: 20px;
+      text-align: center;
     }
-
-    header {
-      margin-bottom: 20px;
-    }
-
     h1 {
       font-size: 3em;
-      margin: 0;
+      margin-bottom: 10px;
     }
-
-    .game-buttons {
+    p {
+      font-size: 1.2em;
+    }
+    .buttons {
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
+      justify-content: center;
       gap: 15px;
       margin-bottom: 20px;
     }
-
     button {
       padding: 15px 25px;
       font-size: 1.2em;
@@ -38,90 +34,77 @@
       border-radius: 10px;
       cursor: pointer;
       background-color: #ffcc00;
-      color: #000;
       transition: background 0.3s;
     }
-
     button:hover {
       background-color: #ffb700;
     }
-
     #game-container {
       width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
+      max-width: 900px;
       min-height: 400px;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255,255,255,0.1);
       border-radius: 15px;
+      margin: 0 auto;
       padding: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🕶️ Cool Boy Games 🕶️</h1>
-    <p>Select a game to play!</p>
-  </header>
-  <div class="game-buttons">
+  <h1>🕶️ Cool Boy Games 🕶️</h1>
+  <p>Select a game to play!</p>
+  <div class="buttons">
     <button onclick="loadGame('shooter1')">Time Shooter 🕹️</button>
     <button onclick="loadGame('shooter2')">Tine Shooter 2</button>
     <button onclick="loadGame('shooter3')">Tine Shooter 3</button>
     <button onclick="loadGame('racing')">TOP SPEED 3D</button>
   </div>
-  <div id="game-container">
-    <!-- Games will load here -->
-  </div>
+  <div id="game-container"></div>
 
-  <!-- Include Three.js for 3D racing scene -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script>
-    let currentAnimationId = null;
+    let animationId = null;
 
     function loadGame(game) {
-      // Cancel previous animation if any
-      if (currentAnimationId) {
-        cancelAnimationFrame(currentAnimationId);
-        currentAnimationId = null;
+      // Cancel previous animation
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
       }
+
       const container = document.getElementById('game-container');
       container.innerHTML = '';
 
       if (game === 'shooter1') {
-        // Open CrazyGames Time Shooter in new tab
-        window.open('https://www.crazygames.com/game/time-shooter', '_blank');
-      } else if (game === 'shooter2' || game === 'shooter3') {
-        // Placeholder for Tine Shooter 2 & 3
-        const canvas = document.createElement('canvas');
-        canvas.width = 800;
-        canvas.height = 400;
-        canvas.style.border = '2px solid #fff';
-        container.appendChild(canvas);
-        startShooterGame(canvas, game === 'shooter2' ? 'Tine Shooter 2' : 'Tine Shooter 3');
+        // Embed Time Shooter in same page
+        container.innerHTML = `
+          <h2 style="color:#fff;">Time Shooter 🕹️</h2>
+          <iframe src="https://www.crazygames.com/game/time-shooter"></iframe>
+        `;
+      } else if (game === 'shooter2') {
+        // Embed Tine Shooter 2
+        container.innerHTML = `
+          <h2 style="color:#fff;">Tine Shooter 2</h2>
+          <iframe src="https://www.crazygames.com/game/tine-shooter-2"></iframe>
+        `;
+      } else if (game === 'shooter3') {
+        // Embed Tine Shooter 3
+        container.innerHTML = `
+          <h2 style="color:#fff;">Tine Shooter 3</h2>
+          <iframe src="https://www.crazygames.com/game/tine-shooter-3"></iframe>
+        `;
       } else if (game === 'racing') {
-        // Embed the Top Speed 3D game
+        // Embed TOP SPEED 3D from Poki
         container.innerHTML = `
           <h2 style="color:#fff;">TOP SPEED 3D - Play Online for Free!</h2>
-          <iframe src="https://poki.com/en/g/top-speed-3d" width="100%" height="600" style="border:none;"></iframe>
+          <iframe src="https://poki.com/en/g/top-speed-3d"></iframe>
         `;
       }
-    }
-
-    // Placeholder for Tine Shooter 2 & 3
-    function startShooterGame(canvas, gameName) {
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#fff';
-      ctx.font = '24px Arial';
-      ctx.fillText(`Playing ${gameName}!`, 50, 50);
-
-      let x = 100;
-      setInterval(() => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillText(`Playing ${gameName}!`, 50, 50);
-        ctx.fillStyle = 'red';
-        ctx.fillRect(x, 100, 50, 50);
-        x += 5;
-        if (x > canvas.width) x = 0;
-      }, 100);
     }
   </script>
 </body>
